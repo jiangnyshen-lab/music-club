@@ -96,6 +96,51 @@ CREATE TABLE IF NOT EXISTS party_posts (
   content TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS review_likes (
+  review_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (review_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS review_comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  review_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  content TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS featured_albums (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  album_id INTEGER NOT NULL,
+  note TEXT,
+  ends_at TEXT,
+  created_by INTEGER NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS track_reviews (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  album_id INTEGER NOT NULL,
+  track_number INTEGER NOT NULL,
+  track_title TEXT,
+  score REAL,
+  impression TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE (user_id, album_id, track_number)
+);
+
+CREATE TABLE IF NOT EXISTS track_dimension_scores (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  track_review_id INTEGER NOT NULL,
+  dimension TEXT NOT NULL,
+  score REAL,
+  note TEXT
+);
 `)
 
 // 当前时间（ISO，前端直接能格式化）

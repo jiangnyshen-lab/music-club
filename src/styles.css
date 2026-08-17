@@ -135,10 +135,23 @@ textarea { resize: vertical; }
 .tracks { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 14px; }
 .tracks summary { cursor: pointer; font-weight: 600; font-size: 14px; }
 .tracks ol { margin: 10px 0 0; padding-left: 0; list-style: none; }
-.tracks li { display: flex; align-items: center; gap: 10px; padding: 4px 0; border-bottom: 1px solid var(--bg); font-size: 14px; }
-.tracks li:last-child { border-bottom: none; }
+.track-item { border-bottom: 1px solid var(--bg); }
+.track-item:last-child { border-bottom: none; }
+.track-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 2px; background: none; border: none; font-size: 14px; color: var(--ink); text-align: left; cursor: pointer; font-family: inherit; }
+.track-row:hover { color: var(--accent); }
 .track-no { color: var(--muted); font-size: 12px; min-width: 20px; text-align: right; }
-.track-dur { margin-left: auto; font-size: 12px; }
+.track-title { flex: 1; min-width: 0; }
+.track-count { flex-shrink: 0; }
+.track-dur { font-size: 12px; flex-shrink: 0; }
+
+/* 单曲点评面板 */
+.track-panel { margin: 4px 0 10px; padding: 12px; background: #fbfaf8; border: 1px solid var(--border); border-radius: 10px; }
+.track-panel-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.track-panel-row .muted { flex-shrink: 0; }
+.track-panel .ghost-btn { width: 100%; margin-top: 10px; }
+.track-panel .primary-btn { width: 100%; margin-top: 10px; }
+.track-others { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+.track-other-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 0; }
 
 .review-form .primary-btn { width: 100%; margin-top: 16px; }
 .review-form .ghost-btn { width: 100%; margin-top: 12px; }
@@ -183,3 +196,71 @@ textarea { resize: vertical; }
 /* 空状态 */
 .empty { text-align: center; padding: 50px 20px; }
 .empty p { margin: 6px 0; }
+
+/* 点评互动（点赞 / 留言） */
+.review-actions { display: flex; gap: 8px; margin-top: 12px; }
+.action-btn { display: inline-flex; align-items: center; gap: 5px; background: none; border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; font-size: 13px; color: var(--muted); }
+.action-btn:hover { border-color: var(--accent); color: var(--accent); }
+.action-btn.liked { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.comment-box { margin-top: 12px; border-top: 1px solid var(--bg); padding-top: 10px; }
+.comment { padding: 8px 0; border-bottom: 1px solid var(--bg); }
+.comment:last-child { border-bottom: none; }
+.comment-head { display: flex; justify-content: space-between; }
+.comment-author { font-weight: 600; font-size: 13px; }
+.comment-content { margin: 2px 0 0; font-size: 14px; white-space: pre-wrap; }
+.comment-form { display: flex; gap: 8px; margin-top: 10px; }
+.comment-form input { flex: 1; }
+
+/* 口味差徽章 */
+.diff-chip { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+.diff-up { background: var(--green-soft); color: var(--green); }
+.diff-down { background: var(--amber-soft); color: var(--amber); }
+.diff-same { background: var(--bg); color: var(--muted); }
+
+/* 排行榜 */
+.rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 10px; background: var(--bg); color: var(--muted); font-weight: 700; font-size: 15px; flex-shrink: 0; }
+.rank-badge.top1 { background: var(--accent); color: #fff; }
+.rank-badge.top2 { background: #b8860b; color: #fff; }
+.rank-badge.top3 { background: #a06a4a; color: #fff; }
+.top-row { display: flex; gap: 12px; align-items: center; color: var(--ink); }
+.top-row:hover { text-decoration: none; border-color: var(--accent); }
+.top-meta { flex: 1; min-width: 0; }
+.top-score { font-size: 20px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+.top-count { font-size: 12px; color: var(--muted); }
+
+/* 我的专辑库 */
+.sort-bar { margin-bottom: 14px; }
+.mine-row { display: flex; gap: 12px; align-items: center; color: var(--ink); }
+.mine-row:hover { text-decoration: none; border-color: var(--accent); }
+.mine-meta { flex: 1; min-width: 0; }
+
+/* 顶栏换行（导航项变多时） */
+.topbar nav { flex-wrap: wrap; }
+
+/* 共听横幅 */
+.featured { border-color: var(--accent); }
+.featured-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.featured-tag { font-weight: 700; color: var(--accent); }
+.featured-album { display: flex; gap: 12px; align-items: center; color: var(--ink); }
+.featured-album:hover { text-decoration: none; }
+.featured-meta { flex: 1; min-width: 0; }
+.featured-note { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.featured-reviews { margin-top: 10px; }
+.featured-reviews .chips { margin-top: 6px; }
+.featured .ghost-btn { width: 100%; margin-top: 12px; }
+
+/* 听友会状态徽章 */
+.badge-today { background: #fdecea; color: #c0392b; }
+.badge-soon { background: var(--green-soft); color: var(--green); }
+.badge-ended { background: var(--bg); color: var(--muted); }
+.badge-later { background: var(--bg); color: var(--muted); }
+
+/* 数据报告 */
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.top-item { margin-top: 8px; }
+.taste-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--bg); }
+.taste-row:last-child { border-bottom: none; }
+.taste-name { font-weight: 600; font-size: 14px; }

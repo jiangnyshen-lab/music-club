@@ -6,6 +6,9 @@ import Search from './pages/Search.jsx'
 import AlbumDetail from './pages/AlbumDetail.jsx'
 import Parties from './pages/Parties.jsx'
 import PartyDetail from './pages/PartyDetail.jsx'
+import TopAlbums from './pages/TopAlbums.jsx'
+import MyAlbums from './pages/MyAlbums.jsx'
+import Report from './pages/Report.jsx'
 
 function Shell() {
   const { user, logout } = useAuth()
@@ -15,8 +18,11 @@ function Shell() {
         <Link to="/" className="brand">🎵 音乐圈</Link>
         <nav>
           <NavLink to="/" end>时间线</NavLink>
+          <NavLink to="/top">排行榜</NavLink>
           <NavLink to="/search">搜专辑</NavLink>
           <NavLink to="/parties">听友会</NavLink>
+          <NavLink to="/report">报告</NavLink>
+          <NavLink to="/mine">我的</NavLink>
         </nav>
         <div className="user-box">
           <span>{user?.display_name}</span>
@@ -26,6 +32,9 @@ function Shell() {
       <main className="content">
         <Routes>
           <Route path="/" element={<Feed />} />
+          <Route path="/top" element={<TopAlbums />} />
+          <Route path="/mine" element={<MyAlbums />} />
+          <Route path="/report" element={<Report />} />
           <Route path="/search" element={<Search />} />
           <Route path="/albums/:id" element={<AlbumDetail />} />
           <Route path="/parties" element={<Parties />} />

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { api } from '../api.js'
 import { useAuth } from '../auth.jsx'
-import { Cover, formatDate } from '../components/ui.jsx'
+import { Cover, formatDate, partyStatus } from '../components/ui.jsx'
 
 export default function PartyDetail() {
   const { id } = useParams()
@@ -43,6 +43,7 @@ export default function PartyDetail() {
 
   const { party, members, posts } = data
   const joined = members.some((m) => m.id === user.id)
+  const st = partyStatus(party.scheduled_date)
 
   return (
     <div>
@@ -56,6 +57,7 @@ export default function PartyDetail() {
           </div>
           <div className="muted small">
             {party.creator_name} 发起 · {formatDate(party.created_at)}{party.scheduled_date ? ' · 约 ' + party.scheduled_date : ''}
+            {st && <span className={'badge ' + st.cls}>{st.label}</span>}
           </div>
         </div>
         {!joined && <button className="primary-btn" onClick={join}>加入</button>}

@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../api.js'
 import { useAuth } from '../auth.jsx'
-import { DIMENSION_GROUPS, DIMENSION_LABELS } from '../dimensions.js'
+import { ALBUM_DIMENSION_GROUPS, ALBUM_DIMENSION_LABELS, TRACK_DIMENSION_LABELS } from '../dimensions.js'
 import { Cover, ScoreSlider, ListenBadge, ScorePill, formatDate } from '../components/ui.jsx'
+import ReviewActions from '../components/ReviewActions.jsx'
+import TrackReviewPanel from '../components/TrackReviewPanel.jsx'
 
 function emptyDraft() {
   return {
@@ -26,6 +28,10 @@ export default function AlbumDetail() {
   const [partyOpen, setPartyOpen] = useState(false)
   const [partyTitle, setPartyTitle] = useState('')
   const [partyDate, setPartyDate] = useState('')
+  const [featuredOpen, setFeaturedOpen] = useState(false)
+  const [featuredNote, setFeaturedNote] = useState('')
+  const [featuredDate, setFeaturedDate] = useState('')
+  const [openTrack, setOpenTrack] = useState(null)
 
   function load() {
     api('/albums/' + id)
@@ -86,6 +92,22 @@ export default function AlbumDetail() {
     }
   }
 
+  async function createFeatured(e) {
+    e.preventDefault()
+    setError('')
+    try {
+      await api('/featured', {
+        method: 'POST',
+        body: JSON.stringify({ albumId: Number(id), note: featuredNote, endsAt: featuredDate || null })
+      })
+      setFeaturedOpen(false)
+      setFeaturedNote('')
+      setFeaturedDate('')
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   function setDim(key, patch) {
     setDraft((prev) => ({
       ...prev,
@@ -95,9 +117,10 @@ export default function AlbumDetail() {
 
   if (!data) return <div className="center muted">{error || '加载中…'}</div>
 
-  const { album, reviews } = data
+  const { album, reviews, track_reviews } = data
   const myReview = reviews.find((r) => r.user_id === user.id)
   const others = reviews.filter((r) => r.user_id !== user.id)
+  const trackReviewsFor = (num) => (track_reviews || []).filter((tr) => tr.track_number === num)
 
   return (
     <div className="album-page">
@@ -112,15 +135,25 @@ export default function AlbumDetail() {
 
       {album.tracks && album.tracks.length > 0 && (
         <details className="tracks">
-          <summary>曲目（{album.tracks.length}）</summary>
-          <ol>
-            {album.tracks.map((t) => (
-              <li key={t.number + '-' + t.title}>
-                <span className="track-no">{t.number}</span>
-                <span>{t.title}</span>
-                {t.durationMs ? <span className="muted track-dur">{formatDur(t.durationMs)}</span> : null}
-              </li>
-            ))}
+          <summary>曲目（{album.tracks.length}）· 点一首歌可单独评分</summary>
+          <ol className="track-list">
+            {album.tracks.map((t) => {
+              const trs = trackReviewsFor(t.number)
+              const open = openTrack === t.number
+              return (
+                <li key={t.number + '-' + t.title} className="track-item">
+                  <button type="button" className="track-row" onClick={() => setOpenTrack(open ? null : t.number)}>
+                    <span className="track-no">{t.number}</span>
+                    <span className="track-title">{t.title}</span>
+                    {trs.length > 0 && <span className="muted small track-count">{trs.length} 评</span>}
+                    {t.durationMs ? <span className="muted track-dur">{formatDur(t.durationMs)}</span> : null}
+                  </button>
+                  {open && (
+                    <TrackReviewPanel albumId={Number(id)} track={t} reviews={trs} userId={user.id} onSaved={load} />
+                  )}
+                </li>
+              )
+            })}
           </ol>
         </details>
       )}
@@ -166,7 +199,7 @@ export default function AlbumDetail() {
           <button type="button" className="ghost-btn" onClick={() => setShowDeep(!showDeep)}>{showDeep ? '收起深度评 ▴' : '展开深度评（分维度打分）▾'}</button>
           {showDeep && (
             <div className="deep">
-              {DIMENSION_GROUPS.map((g) => (
+              {ALBUM_DIMENSION_GROUPS.map((g) => (
                 <div className="dim-group" key={g.group}>
                   <div className="dim-group-title">{g.group}</div>
                   {g.items.map((d) => {
@@ -203,7 +236,7 @@ export default function AlbumDetail() {
       <section>
         <h2>大家的点评（{reviews.length}）</h2>
         {myReview && <ReviewCard r={myReview} me />}
-        {others.map((r) => <ReviewCard r={r} key={r.id} />)}
+        {others.map((r) => <ReviewCard r={r} key={r.id} myScore={myReview?.score ?? null} />)}
       </section>
 
       <section className="card party-box">
@@ -220,6 +253,23 @@ export default function AlbumDetail() {
           </form>
         )}
       </section>
+
+      {user.is_admin && (
+        <section className="card party-box">
+          <h2>🎯 共听</h2>
+          {!featuredOpen ? (
+            <button className="primary-btn" onClick={() => setFeaturedOpen(true)}>把这张专辑设为「共听」</button>
+          ) : (
+            <form onSubmit={createFeatured} className="party-form">
+              <label>一句话说明（选填）</label>
+              <input value={featuredNote} onChange={(e) => setFeaturedNote(e.target.value)} placeholder="例如：本周共听，周五前交作业" />
+              <label>截止日期（选填）</label>
+              <input type="date" value={featuredDate} onChange={(e) => setFeaturedDate(e.target.value)} />
+              <button className="primary-btn">设为共听</button>
+            </form>
+          )}
+        </section>
+      )}
     </div>
   )
 }
@@ -229,13 +279,19 @@ function formatDur(ms) {
   return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0')
 }
 
-function ReviewCard({ r, me }) {
+function ReviewCard({ r, me, myScore = null }) {
+  const diff = scoreDiff(myScore, r.score)
   return (
     <div className={'card review ' + (me ? 'review-mine' : '')}>
       <div className="review-head">
         <span className="review-author">{r.display_name}{me ? '（我）' : ''}</span>
         <ListenBadge type={r.listen_type} />
         <ScorePill score={r.score} />
+        {diff != null && (
+          diff > 0.5 ? <span className="diff-chip diff-up">比我高 {diff.toFixed(1)} 分</span> :
+          diff < -0.5 ? <span className="diff-chip diff-down">比我低 {Math.abs(diff).toFixed(1)} 分</span> :
+          <span className="diff-chip diff-same">口味接近</span>
+        )}
         <span className="muted review-date">{formatDate(r.updated_at)}</span>
       </div>
       {r.impression && <p className="impression">{r.impression}</p>}
@@ -246,12 +302,18 @@ function ReviewCard({ r, me }) {
         <div className="dims">
           {r.dimensions.map((d) => (
             <span className="dim-chip" key={d.key} title={d.note || ''}>
-              {DIMENSION_LABELS[d.key] || d.key}{d.score != null ? ' ' + Number(d.score).toFixed(1) : ''}
+              {ALBUM_DIMENSION_LABELS[d.key] || TRACK_DIMENSION_LABELS[d.key] || d.key}{d.score != null ? ' ' + Number(d.score).toFixed(1) : ''}
             </span>
           ))}
         </div>
       )}
       {r.long_review && <p className="long-review">{r.long_review}</p>}
+      <ReviewActions reviewId={r.id} likeCount={r.like_count} likedByMe={r.liked_by_me} commentCount={r.comment_count} />
     </div>
   )
+}
+
+function scoreDiff(myScore, theirScore) {
+  if (myScore == null || theirScore == null) return null
+  return Math.round((theirScore - myScore) * 10) / 10
 }

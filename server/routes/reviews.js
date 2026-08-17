@@ -57,4 +57,47 @@ router.get('/reviews/mine', requireAuth, (req, res) => {
   res.json({ reviews: rows })
 })
 
+// 点赞 / 取消点赞（同一用户对同一条点评只能点一次，再点一次取消）
+router.post('/reviews/:id/like', requireAuth, (req, res) => {
+  const review = db.prepare('SELECT id FROM reviews WHERE id = ?').get(req.params.id)
+  if (!review) return res.status(404).json({ error: '点评不存在' })
+
+  const existing = db.prepare('SELECT 1 FROM review_likes WHERE review_id = ? AND user_id = ?')
+    .get(review.id, req.user.id)
+  if (existing) {
+    db.prepare('DELETE FROM review_likes WHERE review_id = ? AND user_id = ?').run(review.id, req.user.id)
+  } else {
+    db.prepare('INSERT INTO review_likes (review_id, user_id, created_at) VALUES (?,?,?)')
+      .run(review.id, req.user.id, now())
+  }
+  const likeCount = db.prepare('SELECT COUNT(*) AS c FROM review_likes WHERE review_id = ?').get(review.id).c
+  res.json({ liked: !existing, likeCount })
+})
+
+// 一条点评下的留言（按时间正序）
+router.get('/reviews/:id/comments', requireAuth, (req, res) => {
+  const comments = db.prepare(`
+    SELECT rc.id, rc.content, rc.created_at, u.display_name
+    FROM review_comments rc JOIN users u ON u.id = rc.user_id
+    WHERE rc.review_id = ? ORDER BY rc.created_at ASC
+  `).all(req.params.id)
+  res.json({ comments })
+})
+
+// 给一条点评留言
+router.post('/reviews/:id/comments', requireAuth, (req, res) => {
+  const review = db.prepare('SELECT id FROM reviews WHERE id = ?').get(req.params.id)
+  if (!review) return res.status(404).json({ error: '点评不存在' })
+  const content = (req.body?.content || '').trim()
+  if (!content) return res.status(400).json({ error: '留言不能为空' })
+  const info = db.prepare(
+    'INSERT INTO review_comments (review_id, user_id, content, created_at) VALUES (?,?,?,?)'
+  ).run(review.id, req.user.id, content, now())
+  const comment = db.prepare(`
+    SELECT rc.id, rc.content, rc.created_at, u.display_name
+    FROM review_comments rc JOIN users u ON u.id = rc.user_id WHERE rc.id = ?
+  `).get(Number(info.lastInsertRowid))
+  res.json({ comment })
+})
+
 export default router

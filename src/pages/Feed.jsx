@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api.js'
 import { Cover, ListenBadge, ScorePill, formatDate } from '../components/ui.jsx'
+import ReviewActions from '../components/ReviewActions.jsx'
+import FeaturedBanner from '../components/FeaturedBanner.jsx'
 
 export default function Feed() {
   const [items, setItems] = useState(null)
@@ -13,17 +15,17 @@ export default function Feed() {
 
   if (error) return <div className="center muted">{error}</div>
   if (!items) return <div className="center muted">加载中…</div>
-  if (items.length === 0) {
-    return (
-      <div className="empty">
-        <p>时间线还空着。</p>
-        <p className="muted">去「搜专辑」标记你最近听的一张吧 🎧</p>
-      </div>
-    )
-  }
 
   return (
-    <div className="feed">
+    <div>
+      <FeaturedBanner />
+      {items.length === 0 ? (
+        <div className="empty">
+          <p>时间线还空着。</p>
+          <p className="muted">去「搜专辑」标记你最近听的一张吧 🎧</p>
+        </div>
+      ) : (
+      <div className="feed">
       {items.map((it) => (
         <div className="card feed-item" key={it.review_id}>
           <div className="feed-head">
@@ -41,8 +43,11 @@ export default function Feed() {
             {it.fav_track && <div className="mini"><span className="mini-label">最想再听</span>{it.fav_track}</div>}
             {it.least_track && <div className="mini"><span className="mini-label">最无感</span>{it.least_track}</div>}
           </div>
+          <ReviewActions reviewId={it.review_id} likeCount={it.like_count} likedByMe={it.liked_by_me} commentCount={it.comment_count} />
         </div>
       ))}
+      </div>
+      )}
     </div>
   )
 }

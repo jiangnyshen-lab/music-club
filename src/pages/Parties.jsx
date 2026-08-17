@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api.js'
-import { Cover, formatDate } from '../components/ui.jsx'
+import { Cover, formatDate, partyStatus } from '../components/ui.jsx'
 
 export default function Parties() {
   const [parties, setParties] = useState(null)
@@ -24,19 +24,25 @@ export default function Parties() {
 
   return (
     <div className="feed">
-      {parties.map((p) => (
-        <Link to={'/parties/' + p.id} key={p.id} className="card party-row">
-          <Cover url={p.cover_url} title={p.album_title} size={56} />
-          <div className="party-meta">
-            <div className="feed-title">{p.title || '一起听：' + p.album_title}</div>
-            <div className="muted">{p.album_title} — {p.album_artist}</div>
-            <div className="muted small">
-              {p.creator_name} 发起 · {formatDate(p.created_at)}{p.scheduled_date ? ' · 约 ' + p.scheduled_date : ''}
+      {parties.map((p) => {
+        const st = partyStatus(p.scheduled_date)
+        return (
+          <Link to={'/parties/' + p.id} key={p.id} className="card party-row">
+            <Cover url={p.cover_url} title={p.album_title} size={56} />
+            <div className="party-meta">
+              <div className="feed-title">
+                {p.title || '一起听：' + p.album_title}
+                {st && <span className={'badge ' + st.cls}>{st.label}</span>}
+              </div>
+              <div className="muted">{p.album_title} — {p.album_artist}</div>
+              <div className="muted small">
+                {p.creator_name} 发起 · {formatDate(p.created_at)}{p.scheduled_date ? ' · 约 ' + p.scheduled_date : ''}
+              </div>
             </div>
-          </div>
-          <div className="party-stats muted">{p.member_count} 人 · {p.post_count} 条讨论</div>
-        </Link>
-      ))}
+            <div className="party-stats muted">{p.member_count} 人 · {p.post_count} 条讨论</div>
+          </Link>
+        )
+      })}
     </div>
   )
 }

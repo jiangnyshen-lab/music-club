@@ -38,3 +38,17 @@ export function formatDate(iso) {
   if (isNaN(d)) return ''
   return d.toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
+
+// 听友会状态：根据约定日期（YYYY-MM-DD）判断今天/即将/已结束
+export function partyStatus(scheduledDate) {
+  if (!scheduledDate) return null
+  const d = new Date(scheduledDate + 'T00:00:00')
+  if (isNaN(d)) return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const diffDays = Math.round((d - today) / 86400000)
+  if (diffDays < 0) return { label: '已结束', cls: 'badge-ended' }
+  if (diffDays === 0) return { label: '今天', cls: 'badge-today' }
+  if (diffDays <= 3) return { label: diffDays + ' 天后', cls: 'badge-soon' }
+  return { label: '还有 ' + diffDays + ' 天', cls: 'badge-later' }
+}

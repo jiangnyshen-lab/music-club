@@ -8,6 +8,9 @@ import albumRoutes from './routes/albums.js'
 import reviewRoutes from './routes/reviews.js'
 import feedRoutes from './routes/feed.js'
 import partyRoutes from './routes/parties.js'
+import featuredRoutes from './routes/featured.js'
+import statsRoutes from './routes/stats.js'
+import trackReviewRoutes from './routes/trackReviews.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -20,6 +23,9 @@ app.use('/api', albumRoutes)
 app.use('/api', reviewRoutes)
 app.use('/api', feedRoutes)
 app.use('/api', partyRoutes)
+app.use('/api', featuredRoutes)
+app.use('/api', statsRoutes)
+app.use('/api', trackReviewRoutes)
 
 app.get('/api/health', (req, res) => res.json({ ok: true }))
 

@@ -41,6 +41,23 @@ router.post('/albums', requireAuth, async (req, res) => {
   res.json({ album: existing })
 })
 
+// 圈子排行榜：所有被点评过的专辑，按平均分排序
+router.get('/top', requireAuth, (req, res) => {
+  const albums = db.prepare(`
+    SELECT a.id, a.title, a.artist, a.year, a.cover_url,
+      ROUND(AVG(r.score), 1) AS avg_score,
+      COUNT(r.id) AS review_count,
+      MIN(r.score) AS min_score,
+      MAX(r.score) AS max_score
+    FROM albums a JOIN reviews r ON r.album_id = a.id
+    WHERE r.score IS NOT NULL
+    GROUP BY a.id
+    ORDER BY avg_score DESC, review_count DESC, a.title ASC
+    LIMIT 50
+  `).all()
+  res.json({ albums })
+})
+
 // 专辑详情（含曲目 + 所有成员的点评）
 router.get('/albums/:id', requireAuth, (req, res) => {
   const album = db.prepare('SELECT * FROM albums WHERE id = ?').get(req.params.id)
@@ -50,10 +67,13 @@ router.get('/albums/:id', requireAuth, (req, res) => {
   try { tracks = JSON.parse(album.tracks_json || '[]') } catch { /* ignore */ }
 
   const reviews = db.prepare(`
-    SELECT r.*, u.display_name, u.username
+    SELECT r.*, u.display_name, u.username,
+      (SELECT COUNT(*) FROM review_likes rl WHERE rl.review_id = r.id) AS like_count,
+      (SELECT COUNT(*) FROM review_comments rc WHERE rc.review_id = r.id) AS comment_count,
+      EXISTS(SELECT 1 FROM review_likes rl WHERE rl.review_id = r.id AND rl.user_id = ?) AS liked_by_me
     FROM reviews r JOIN users u ON u.id = r.user_id
     WHERE r.album_id = ? ORDER BY r.updated_at DESC
-  `).all(album.id)
+  `).all(req.user.id, album.id)
 
   const dimsByReview = {}
   if (reviews.length) {
@@ -68,9 +88,31 @@ router.get('/albums/:id', requireAuth, (req, res) => {
       })
     }
   }
-  const reviewsWithDims = reviews.map((rv) => ({ ...rv, dimensions: dimsByReview[rv.id] || [] }))
+  const reviewsWithDims = reviews.map((rv) => ({ ...rv, liked_by_me: !!rv.liked_by_me, dimensions: dimsByReview[rv.id] || [] }))
 
-  res.json({ album: { ...album, tracks_json: undefined, tracks }, reviews: reviewsWithDims })
+  // 单曲点评（带维度分 + 点评人昵称）
+  const trackReviews = db.prepare(`
+    SELECT tr.*, u.display_name
+    FROM track_reviews tr JOIN users u ON u.id = tr.user_id
+    WHERE tr.album_id = ? ORDER BY tr.updated_at DESC
+  `).all(album.id)
+
+  const dimsByTrackReview = {}
+  if (trackReviews.length) {
+    const tids = trackReviews.map((r) => r.id)
+    const tPh = tids.map(() => '?').join(',')
+    const tDims = db.prepare(
+      `SELECT * FROM track_dimension_scores WHERE track_review_id IN (${tPh})`
+    ).all(...tids)
+    for (const d of tDims) {
+      ;(dimsByTrackReview[d.track_review_id] = dimsByTrackReview[d.track_review_id] || []).push({
+        key: d.dimension, score: d.score, note: d.note
+      })
+    }
+  }
+  const trackReviewsWithDims = trackReviews.map((tr) => ({ ...tr, dimensions: dimsByTrackReview[tr.id] || [] }))
+
+  res.json({ album: { ...album, tracks_json: undefined, tracks }, reviews: reviewsWithDims, track_reviews: trackReviewsWithDims })
 })
 
 export default router
