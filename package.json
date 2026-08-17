@@ -1,0 +1,24 @@
+{
+  "name": "music-club",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "私密小圈子听专辑共写日记 + 听友会",
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c cyan,magenta \"node --watch server/index.js\" \"vite\"",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "seed": "node server/db.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.5",
+    "concurrently": "^10.0.4",
+    "vite": "^8.2.1"
+  }
+}
