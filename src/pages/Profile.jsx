@@ -95,11 +95,11 @@ export default function Profile() {
             <label>个性签名</label>
             <input value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} maxLength={120} placeholder="一句话介绍你的音乐口味" />
 
-            <label>喜欢的歌手（逗号分隔）</label>
-            <input value={form.favoriteArtists} onChange={(e) => setForm({ ...form, favoriteArtists: e.target.value })} placeholder="例如：周杰伦, Radiohead, 林俊杰" />
+            <label>喜欢的歌手（逗号或顿号分隔）</label>
+            <input value={form.favoriteArtists} onChange={(e) => setForm({ ...form, favoriteArtists: e.target.value })} placeholder="例如：蔡健雅、张震岳" />
 
-            <label>喜欢的专辑（逗号分隔）</label>
-            <input value={form.favoriteAlbums} onChange={(e) => setForm({ ...form, favoriteAlbums: e.target.value })} placeholder="例如：范特西, OK Computer" />
+            <label>喜欢的专辑（逗号或顿号分隔）</label>
+            <input value={form.favoriteAlbums} onChange={(e) => setForm({ ...form, favoriteAlbums: e.target.value })} placeholder="例如：若你碰到他、跟着感觉走" />
 
             <label>偏好的风格（逗号分隔）</label>
             <input value={form.favoriteGenres} onChange={(e) => setForm({ ...form, favoriteGenres: e.target.value })} placeholder="例如：J-Pop, 后摇, 爵士" />
