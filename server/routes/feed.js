@@ -8,7 +8,7 @@ const router = express.Router()
 router.get('/feed', requireAuth, (req, res) => {
   const items = db.prepare(`
     SELECT r.id AS review_id, r.listen_type, r.score, r.impression, r.fav_track, r.least_track, r.updated_at,
-           a.id AS album_id, a.title, a.artist, a.cover_url, a.year,
+           a.id AS album_id, a.title, a.artist, a.cover_url, a.year, a.genre,
            u.id AS user_id, u.display_name, u.avatar,
            (SELECT COUNT(*) FROM review_likes rl WHERE rl.review_id = r.id) AS like_count,
            (SELECT COUNT(*) FROM review_comments rc WHERE rc.review_id = r.id) AS comment_count,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api.js'
-import { Cover } from '../components/ui.jsx'
+import { Cover, GenreTag } from '../components/ui.jsx'
 
 function rankClass(i) {
   if (i === 1) return 'top1'
@@ -40,7 +40,7 @@ export default function TopAlbums() {
             <Cover url={a.cover_url} title={a.title} size={52} />
             <div className="top-meta">
               <div className="feed-title">{a.title}</div>
-              <div className="muted">{a.artist}{a.year ? ' · ' + a.year : ''}</div>
+              <div className="muted">{a.artist}{a.year ? ' · ' + a.year : ''}<GenreTag genre={a.genre} /></div>
               <div className="top-count">{a.review_count} 人评过</div>
             </div>
             <div className="top-score">{Number(a.avg_score).toFixed(1)}</div>

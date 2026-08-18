@@ -5,7 +5,7 @@ import { TRACK_DIMENSION_GROUPS, TRACK_DIMENSION_LABELS } from '../dimensions.js
 import { ScoreSlider, Avatar } from './ui.jsx'
 
 function emptyDraft() {
-  return { score: 7.0, impression: '', dimensions: {} }
+  return { score: null, impression: '', dimensions: {} }
 }
 
 // 单曲点评面板：默认打分 + 一句话，可展开 7 个单曲维度
@@ -23,7 +23,7 @@ export default function TrackReviewPanel({ albumId, track, reviews, userId, onSa
     if (mine) {
       const dims = {}
       for (const dd of (mine.dimensions || [])) dims[dd.key] = dd
-      setDraft({ score: mine.score ?? 7.0, impression: mine.impression || '', dimensions: dims })
+      setDraft({ score: mine.score ?? null, impression: mine.impression || '', dimensions: dims })
     } else {
       setDraft(emptyDraft())
     }
@@ -86,7 +86,6 @@ export default function TrackReviewPanel({ albumId, track, reviews, userId, onSa
                         />
                       </div>
                       <div className="dim-tip">{d.tip}</div>
-                      <div className="dim-q">🤔 {d.question}</div>
                       <input className="dim-note" placeholder="一句话点评（选填）" value={val.note || ''} onChange={(e) => setDim(d.key, { note: e.target.value })} />
                     </div>
                   )

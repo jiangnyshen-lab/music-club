@@ -35,14 +35,14 @@ router.get('/users/:id', requireAuth, (req, res) => {
   const avgScore = db.prepare('SELECT AVG(score) AS a FROM reviews WHERE user_id = ? AND score IS NOT NULL').get(u.id).a
 
   const top = db.prepare(`
-    SELECT a.id, a.title, a.artist, a.year, a.cover_url, r.score
+    SELECT a.id, a.title, a.artist, a.year, a.cover_url, a.genre, r.score
     FROM reviews r JOIN albums a ON a.id = r.album_id
     WHERE r.user_id = ? AND r.score IS NOT NULL
     ORDER BY r.score DESC, r.updated_at DESC LIMIT 5
   `).all(u.id)
 
   const recent = db.prepare(`
-    SELECT r.id, r.score, r.impression, r.updated_at, a.id AS album_id, a.title, a.artist, a.cover_url
+    SELECT r.id, r.score, r.impression, r.updated_at, a.id AS album_id, a.title, a.artist, a.cover_url, a.genre
     FROM reviews r JOIN albums a ON a.id = r.album_id
     WHERE r.user_id = ? ORDER BY r.updated_at DESC LIMIT 5
   `).all(u.id)

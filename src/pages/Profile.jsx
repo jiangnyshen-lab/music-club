@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { api } from '../api.js'
 import { useAuth } from '../auth.jsx'
-import { Avatar, Cover, ScorePill } from '../components/ui.jsx'
+import { Avatar, Cover, ScorePill, GenreTag } from '../components/ui.jsx'
 
 const EMOJIS = ['🎧', '🎵', '🎶', '🎤', '🎹', '🎸', '🥁', '🎷', '🎺', '🎻', '🎙️', '💿', '📀', '🔥', '🌟', '🌙', '🍊', '🐱', '🐶']
 
@@ -136,7 +136,7 @@ export default function Profile() {
               <Cover url={a.cover_url} title={a.title} size={40} />
               <div className="mine-meta">
                 <div className="feed-title">{a.title}</div>
-                <div className="muted">{a.artist}{a.year ? ' · ' + a.year : ''}</div>
+                <div className="muted">{a.artist}{a.year ? ' · ' + a.year : ''}<GenreTag genre={a.genre} /></div>
               </div>
               <ScorePill score={a.score} />
             </Link>

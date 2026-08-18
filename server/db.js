@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS albums (
   year TEXT,
   cover_url TEXT,
   track_count INTEGER,
+  genre TEXT,
   tracks_json TEXT,
   created_at TEXT NOT NULL
 );
@@ -157,6 +158,14 @@ const userColumns = [
   'ALTER TABLE users ADD COLUMN favorite_genres TEXT'
 ]
 for (const sql of userColumns) {
+  try { db.exec(sql) } catch { /* 列已存在，跳过 */ }
+}
+
+// 老库补列：给已存在的 albums 表加流派字段
+const albumColumns = [
+  'ALTER TABLE albums ADD COLUMN genre TEXT'
+]
+for (const sql of albumColumns) {
   try { db.exec(sql) } catch { /* 列已存在，跳过 */ }
 }
 

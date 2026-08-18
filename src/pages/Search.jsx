@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api.js'
-import { Cover } from '../components/ui.jsx'
+import { Cover, GenreTag } from '../components/ui.jsx'
 
 export default function Search() {
   const [q, setQ] = useState('')
@@ -53,7 +53,7 @@ export default function Search() {
               <Cover url={r.coverUrl} title={r.title} size={56} />
               <div className="result-meta">
                 <div className="result-title">{r.title}</div>
-                <div className="muted">{r.artist} · {r.year || '—'}{r.trackCount ? ' · ' + r.trackCount + ' 首' : ''}</div>
+                <div className="muted">{r.artist} · {r.year || '—'}{r.trackCount ? ' · ' + r.trackCount + ' 首' : ''}<GenreTag genre={r.genre} /></div>
               </div>
               <button className="ghost-btn" onClick={() => pick(r)} disabled={busy}>去点评</button>
             </div>

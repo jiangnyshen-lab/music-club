@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api.js'
-import { Cover, ListenBadge, ScorePill, formatDate } from '../components/ui.jsx'
+import { Cover, ListenBadge, ScorePill, formatDate, GenreTag } from '../components/ui.jsx'
 
 export default function MyAlbums() {
   const [reviews, setReviews] = useState(null)
@@ -43,7 +43,7 @@ export default function MyAlbums() {
             <Cover url={r.cover_url} title={r.title} size={56} />
             <div className="mine-meta">
               <div className="feed-title">{r.title}</div>
-              <div className="muted">{r.artist}{r.year ? ' · ' + r.year : ''}</div>
+              <div className="muted">{r.artist}{r.year ? ' · ' + r.year : ''}<GenreTag genre={r.genre} /></div>
               <div className="muted small"><ListenBadge type={r.listen_type} />{formatDate(r.updated_at)}</div>
             </div>
             {r.score != null && <ScorePill score={r.score} />}

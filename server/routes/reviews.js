@@ -50,7 +50,7 @@ router.post('/albums/:id/reviews', requireAuth, (req, res) => {
 // 我的全部点评
 router.get('/reviews/mine', requireAuth, (req, res) => {
   const rows = db.prepare(`
-    SELECT r.*, a.title, a.artist, a.cover_url, a.year, a.id AS album_id
+    SELECT r.*, a.title, a.artist, a.cover_url, a.year, a.genre, a.id AS album_id
     FROM reviews r JOIN albums a ON a.id = r.album_id
     WHERE r.user_id = ? ORDER BY r.updated_at DESC
   `).all(req.user.id)

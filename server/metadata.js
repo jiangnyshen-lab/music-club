@@ -25,7 +25,8 @@ export async function searchAlbums(query) {
     artist: r.artistName,
     year: r.releaseDate ? r.releaseDate.slice(0, 4) : null,
     coverUrl: bigCover(r.artworkUrl100),
-    trackCount: r.trackCount || null
+    trackCount: r.trackCount || null,
+    genre: r.primaryGenreName || null
   }))
 }
 
@@ -39,4 +40,11 @@ export async function getTracks(collectionId) {
       title: r.trackName,
       durationMs: r.trackTimeMillis || null
     }))
+}
+
+export async function getAlbumGenre(collectionId) {
+  const url = `${ITUNES_LOOKUP}?id=${encodeURIComponent(collectionId)}`
+  const data = await fetchJson(url)
+  const album = (data.results || []).find((r) => r.wrapperType === 'collection')
+  return album ? album.primaryGenreName || null : null
 }

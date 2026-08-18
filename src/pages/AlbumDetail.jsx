@@ -3,13 +3,13 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../api.js'
 import { useAuth } from '../auth.jsx'
 import { ALBUM_DIMENSION_GROUPS, ALBUM_DIMENSION_LABELS, TRACK_DIMENSION_LABELS } from '../dimensions.js'
-import { Cover, ScoreSlider, ListenBadge, ScorePill, formatDate, Avatar } from '../components/ui.jsx'
+import { Cover, ScoreSlider, ListenBadge, ScorePill, formatDate, Avatar, GenreTag, AutoTextarea } from '../components/ui.jsx'
 import ReviewActions from '../components/ReviewActions.jsx'
 import TrackReviewPanel from '../components/TrackReviewPanel.jsx'
 
 function emptyDraft() {
   return {
-    listenType: 'full', score: 7.0, impression: '', favTrack: '', leastTrack: '',
+    listenType: 'full', score: null, impression: '', favTrack: '', leastTrack: '',
     association: '', relisten: '', longReview: '', dimensions: {}
   }
 }
@@ -42,7 +42,7 @@ export default function AlbumDetail() {
           const dims = {}
           for (const dd of (mine.dimensions || [])) dims[dd.key] = dd
           setDraft({
-            listenType: mine.listen_type, score: mine.score ?? 7.0,
+            listenType: mine.listen_type, score: mine.score ?? null,
             impression: mine.impression || '', favTrack: mine.fav_track || '',
             leastTrack: mine.least_track || '', association: mine.association || '',
             relisten: mine.relisten || '', longReview: mine.long_review || '', dimensions: dims
@@ -128,7 +128,7 @@ export default function AlbumDetail() {
         <Cover url={album.cover_url} title={album.title} size={120} radius={14} />
         <div className="album-info">
           <h1 className="album-title">{album.title}</h1>
-          <div className="album-artist">{album.artist}{album.year ? ' · ' + album.year : ''}</div>
+          <div className="album-artist">{album.artist}{album.year ? ' · ' + album.year : ''}<GenreTag genre={album.genre} /></div>
           {album.track_count ? <div className="muted">{album.track_count} 首</div> : null}
         </div>
       </div>
@@ -215,7 +215,6 @@ export default function AlbumDetail() {
                           />
                         </div>
                         <div className="dim-tip">{d.tip}</div>
-                        <div className="dim-q">🤔 {d.question}</div>
                         <input className="dim-note" placeholder="一句话点评（选填）" value={val.note || ''} onChange={(e) => setDim(d.key, { note: e.target.value })} />
                       </div>
                     )
@@ -226,7 +225,7 @@ export default function AlbumDetail() {
           )}
 
           <button type="button" className="ghost-btn" onClick={() => setShowLong(!showLong)}>{showLong ? '收起自由长评 ▴' : '写自由长评 ▾'}</button>
-          {showLong && <textarea value={draft.longReview} onChange={(e) => setDraft({ ...draft, longReview: e.target.value })} placeholder="想写多少写多少" rows={6} />}
+          {showLong && <AutoTextarea value={draft.longReview} onChange={(e) => setDraft({ ...draft, longReview: e.target.value })} placeholder="想写多少写多少" rows={6} />}
 
           {error && <div className="error">{error}</div>}
           <button className="primary-btn" disabled={saving}>{saving ? '保存中…' : '保存点评'}</button>

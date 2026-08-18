@@ -27,7 +27,7 @@ router.get('/stats', requireAuth, (req, res) => {
   const myCount = db.prepare('SELECT COUNT(*) AS c FROM reviews WHERE user_id = ?').get(req.user.id).c
   const myAvg = db.prepare('SELECT AVG(score) AS a FROM reviews WHERE user_id = ? AND score IS NOT NULL').get(req.user.id).a
   const myTop = db.prepare(`
-    SELECT a.id, a.title, a.artist, a.year, a.cover_url, r.score
+    SELECT a.id, a.title, a.artist, a.year, a.cover_url, a.genre, r.score
     FROM reviews r JOIN albums a ON a.id = r.album_id
     WHERE r.user_id = ? AND r.score IS NOT NULL
     ORDER BY r.score DESC, r.updated_at DESC LIMIT 5

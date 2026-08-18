@@ -1,7 +1,7 @@
 import express from 'express'
 import { db, now } from '../db.js'
 import { requireAuth } from '../auth.js'
-import { searchAlbums, getTracks } from '../metadata.js'
+import { searchAlbums, getTracks, getAlbumGenre } from '../metadata.js'
 
 const router = express.Router()
 
@@ -19,7 +19,7 @@ router.get('/search', requireAuth, async (req, res) => {
 
 // 保存专辑（并尽力拉取曲目列表）
 router.post('/albums', requireAuth, async (req, res) => {
-  const { collectionId, title, artist, year, coverUrl, trackCount } = req.body || {}
+  const { collectionId, title, artist, year, coverUrl, trackCount, genre } = req.body || {}
   if (!collectionId || !title || !artist) return res.status(400).json({ error: '缺少专辑信息' })
 
   let existing = db.prepare('SELECT * FROM albums WHERE collection_id = ?').get(String(collectionId))
@@ -30,12 +30,12 @@ router.post('/albums', requireAuth, async (req, res) => {
 
   if (existing) {
     db.prepare(
-      'UPDATE albums SET title=?, artist=?, year=?, cover_url=?, track_count=?, tracks_json=? WHERE id=?'
-    ).run(title, artist, year || null, coverUrl || null, trackCount || null, tracksJson, existing.id)
+      'UPDATE albums SET title=?, artist=?, year=?, cover_url=?, track_count=?, genre=?, tracks_json=? WHERE id=?'
+    ).run(title, artist, year || null, coverUrl || null, trackCount || null, genre || null, tracksJson, existing.id)
   } else {
     const info = db.prepare(
-      'INSERT INTO albums (collection_id, title, artist, year, cover_url, track_count, tracks_json, created_at) VALUES (?,?,?,?,?,?,?,?)'
-    ).run(String(collectionId), title, artist, year || null, coverUrl || null, trackCount || null, tracksJson, now())
+      'INSERT INTO albums (collection_id, title, artist, year, cover_url, track_count, genre, tracks_json, created_at) VALUES (?,?,?,?,?,?,?,?,?)'
+    ).run(String(collectionId), title, artist, year || null, coverUrl || null, trackCount || null, genre || null, tracksJson, now())
     existing = db.prepare('SELECT * FROM albums WHERE id = ?').get(Number(info.lastInsertRowid))
   }
   res.json({ album: existing })
@@ -44,7 +44,7 @@ router.post('/albums', requireAuth, async (req, res) => {
 // 圈子排行榜：所有被点评过的专辑，按平均分排序
 router.get('/top', requireAuth, (req, res) => {
   const albums = db.prepare(`
-    SELECT a.id, a.title, a.artist, a.year, a.cover_url,
+    SELECT a.id, a.title, a.artist, a.year, a.cover_url, a.genre,
       ROUND(AVG(r.score), 1) AS avg_score,
       COUNT(r.id) AS review_count,
       MIN(r.score) AS min_score,
@@ -59,9 +59,20 @@ router.get('/top', requireAuth, (req, res) => {
 })
 
 // 专辑详情（含曲目 + 所有成员的点评）
-router.get('/albums/:id', requireAuth, (req, res) => {
+router.get('/albums/:id', requireAuth, async (req, res) => {
   const album = db.prepare('SELECT * FROM albums WHERE id = ?').get(req.params.id)
   if (!album) return res.status(404).json({ error: '专辑不存在' })
+
+  // 老专辑没存过流派时，顺手回填一次（拉不到也不影响展示）
+  if (!album.genre && album.collection_id) {
+    try {
+      const genre = await getAlbumGenre(album.collection_id)
+      if (genre) {
+        db.prepare('UPDATE albums SET genre=? WHERE id=?').run(genre, album.id)
+        album.genre = genre
+      }
+    } catch { /* ignore */ }
+  }
 
   let tracks = []
   try { tracks = JSON.parse(album.tracks_json || '[]') } catch { /* ignore */ }

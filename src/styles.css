@@ -109,6 +109,7 @@ textarea { resize: vertical; }
 .badge-casual { background: var(--amber-soft); color: var(--amber); }
 .score-pill { display: inline-block; background: var(--ink); color: #fff; border-radius: 8px; padding: 2px 8px; font-weight: 700; font-size: 14px; }
 .score-big { font-size: 22px; font-weight: 700; color: var(--accent); min-width: 48px; text-align: right; }
+.score-big-dim { color: var(--muted); opacity: 0.5; }
 .score-slider { display: flex; align-items: center; gap: 14px; }
 .score-slider input[type=range] { flex: 1; accent-color: var(--accent); }
 
@@ -165,7 +166,6 @@ textarea { resize: vertical; }
 .dim-en { color: var(--muted); font-weight: 400; font-size: 11px; margin-left: 4px; }
 .dim-score { width: 64px !important; text-align: center; padding: 6px !important; }
 .dim-tip { font-size: 12px; color: var(--muted); margin-top: 4px; }
-.dim-q { font-size: 12px; font-style: italic; margin-top: 2px; }
 .dim-note { margin-top: 6px; padding: 8px 10px !important; font-size: 13px; }
 
 /* 点评卡片 */
@@ -185,6 +185,7 @@ textarea { resize: vertical; }
 .party-form .primary-btn { width: 100%; margin-top: 12px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; font-size: 13px; }
+.genre-tag { display: inline-block; font-size: 11px; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; white-space: nowrap; }
 .post-form { display: flex; gap: 8px; margin-bottom: 12px; }
 .post-form input { flex: 1; }
 .post { border-bottom: 1px solid var(--bg); padding: 10px 0; }

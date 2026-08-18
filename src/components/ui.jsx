@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 // 封面图，加载失败就显示占位块
 export function Cover({ url, title, size = 64, radius = 10 }) {
@@ -23,12 +23,52 @@ export function Avatar({ user, size = 32 }) {
   return <span className="avatar avatar-initial" style={style}>{name[0] || '♪'}</span>
 }
 
+export function GenreTag({ genre }) {
+  if (!genre) return null
+  return <span className="genre-tag">{genre}</span>
+}
+
 export function ScoreSlider({ value, onChange }) {
+  const display = value == null ? 7 : value
+  function onKeyDown(e) {
+    const step = { ArrowUp: 0.5, ArrowRight: 0.5, ArrowDown: -0.5, ArrowLeft: -0.5 }[e.key]
+    if (step == null) return
+    e.preventDefault()
+    if (value == null) {
+      onChange(7)
+    } else {
+      onChange(Math.max(0, Math.min(10, value + step)))
+    }
+  }
   return (
     <div className="score-slider">
-      <input type="range" min="0" max="10" step="0.5" value={value} onChange={(e) => onChange(Number(e.target.value))} />
-      <span className="score-big">{Number(value).toFixed(1)}</span>
+      <input
+        type="range" min="0" max="10" step="0.5" value={display}
+        onChange={(e) => onChange(Number(e.target.value))}
+        onKeyDown={onKeyDown}
+      />
+      <span className={'score-big' + (value == null ? ' score-big-dim' : '')}>{display.toFixed(1)}</span>
     </div>
+  )
+}
+
+export function AutoTextarea({ value, onChange, placeholder, rows = 1 }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = el.scrollHeight + 'px'
+  }, [value])
+  return (
+    <textarea
+      ref={ref}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      rows={rows}
+      style={{ overflow: 'hidden', resize: 'none' }}
+    />
   )
 }
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api.js'
-import { Cover, formatDate } from './ui.jsx'
+import { Cover, formatDate, GenreTag } from './ui.jsx'
 
 // 首页顶部的「共听」横幅：展示发起人指定的当前专辑 + 已交作业的人
 export default function FeaturedBanner() {
@@ -27,7 +27,7 @@ export default function FeaturedBanner() {
         <Cover url={f.album.cover_url} title={f.album.title} size={64} />
         <div className="featured-meta">
           <div className="feed-title">{f.album.title}</div>
-          <div className="muted">{f.album.artist}{f.album.year ? ' · ' + f.album.year : ''}</div>
+          <div className="muted">{f.album.artist}{f.album.year ? ' · ' + f.album.year : ''}<GenreTag genre={f.album.genre} /></div>
           {f.note && <div className="featured-note">{f.note}</div>}
         </div>
       </Link>

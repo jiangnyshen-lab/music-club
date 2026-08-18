@@ -6,7 +6,7 @@ const router = express.Router()
 
 function getLatestFeatured() {
   return db.prepare(`
-    SELECT f.*, a.id AS album_id, a.title, a.artist, a.year, a.cover_url,
+    SELECT f.*, a.id AS album_id, a.title, a.artist, a.year, a.cover_url, a.genre,
            u.display_name AS creator_name
     FROM featured_albums f
     JOIN albums a ON a.id = f.album_id
@@ -36,7 +36,7 @@ router.get('/featured', requireAuth, (req, res) => {
     featured: {
       id: f.id, note: f.note, ends_at: f.ends_at, created_at: f.created_at,
       creator_name: f.creator_name, ended,
-      album: { id: f.album_id, title: f.title, artist: f.artist, year: f.year, cover_url: f.cover_url },
+      album: { id: f.album_id, title: f.title, artist: f.artist, year: f.year, cover_url: f.cover_url, genre: f.genre },
       reviews, avg_score: avg, review_count: reviews.length
     }
   })
