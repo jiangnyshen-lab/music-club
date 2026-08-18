@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Routes, Route, Navigate, NavLink, Link } from 'react-router-dom'
 import { AuthProvider, useAuth } from './auth.jsx'
 import Login from './pages/Login.jsx'
@@ -9,9 +10,26 @@ import PartyDetail from './pages/PartyDetail.jsx'
 import TopAlbums from './pages/TopAlbums.jsx'
 import MyAlbums from './pages/MyAlbums.jsx'
 import Report from './pages/Report.jsx'
+import Profile from './pages/Profile.jsx'
+import WhatNew from './components/WhatNew.jsx'
+import { Avatar } from './components/ui.jsx'
+import { APP_VERSION } from './updates.js'
 
 function Shell() {
   const { user, logout } = useAuth()
+  const [whatNewOpen, setWhatNewOpen] = useState(false)
+
+  useEffect(() => {
+    if (localStorage.getItem('mc_lastSeenVersion') !== APP_VERSION) {
+      setWhatNewOpen(true)
+    }
+  }, [])
+
+  function closeWhatNew() {
+    localStorage.setItem('mc_lastSeenVersion', APP_VERSION)
+    setWhatNewOpen(false)
+  }
+
   return (
     <div className="shell">
       <header className="topbar">
@@ -25,7 +43,11 @@ function Shell() {
           <NavLink to="/mine">我的</NavLink>
         </nav>
         <div className="user-box">
-          <span>{user?.display_name}</span>
+          <Link to={'/users/' + user.id} className="user-chip">
+            <Avatar user={user} size={28} />
+            <span>{user?.display_name}</span>
+          </Link>
+          <button className="link-btn" onClick={() => setWhatNewOpen(true)}>更新</button>
           <button className="link-btn" onClick={logout}>退出</button>
         </div>
       </header>
@@ -35,6 +57,7 @@ function Shell() {
           <Route path="/top" element={<TopAlbums />} />
           <Route path="/mine" element={<MyAlbums />} />
           <Route path="/report" element={<Report />} />
+          <Route path="/users/:id" element={<Profile />} />
           <Route path="/search" element={<Search />} />
           <Route path="/albums/:id" element={<AlbumDetail />} />
           <Route path="/parties" element={<Parties />} />
@@ -42,6 +65,7 @@ function Shell() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+      {whatNewOpen && <WhatNew onClose={closeWhatNew} />}
     </div>
   )
 }

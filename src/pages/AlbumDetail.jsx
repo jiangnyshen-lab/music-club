@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../api.js'
 import { useAuth } from '../auth.jsx'
 import { ALBUM_DIMENSION_GROUPS, ALBUM_DIMENSION_LABELS, TRACK_DIMENSION_LABELS } from '../dimensions.js'
-import { Cover, ScoreSlider, ListenBadge, ScorePill, formatDate } from '../components/ui.jsx'
+import { Cover, ScoreSlider, ListenBadge, ScorePill, formatDate, Avatar } from '../components/ui.jsx'
 import ReviewActions from '../components/ReviewActions.jsx'
 import TrackReviewPanel from '../components/TrackReviewPanel.jsx'
 
@@ -284,7 +284,12 @@ function ReviewCard({ r, me, myScore = null }) {
   return (
     <div className={'card review ' + (me ? 'review-mine' : '')}>
       <div className="review-head">
-        <span className="review-author">{r.display_name}{me ? '（我）' : ''}</span>
+        <span className="review-author">
+          <Link to={'/users/' + r.user_id} className="review-author-link">
+            <Avatar user={{ display_name: r.display_name, avatar: r.avatar }} size={24} />
+            {r.display_name}{me ? '（我）' : ''}
+          </Link>
+        </span>
         <ListenBadge type={r.listen_type} />
         <ScorePill score={r.score} />
         {diff != null && (

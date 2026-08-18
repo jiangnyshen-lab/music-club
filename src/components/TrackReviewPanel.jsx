@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../api.js'
 import { TRACK_DIMENSION_GROUPS, TRACK_DIMENSION_LABELS } from '../dimensions.js'
-import { ScoreSlider } from './ui.jsx'
+import { ScoreSlider, Avatar } from './ui.jsx'
 
 function emptyDraft() {
   return { score: 7.0, impression: '', dimensions: {} }
@@ -104,7 +105,12 @@ export default function TrackReviewPanel({ albumId, track, reviews, userId, onSa
           <div className="muted small">大家给这首打的</div>
           {others.map((r) => (
             <div className="track-other-row" key={r.id}>
-              <span className="review-author">{r.display_name}</span>
+              <span className="review-author">
+                <Link to={'/users/' + r.user_id} className="review-author-link">
+                  <Avatar user={{ display_name: r.display_name, avatar: r.avatar }} size={20} />
+                  {r.display_name}
+                </Link>
+              </span>
               {r.score != null && <span className="score-pill">{Number(r.score).toFixed(1)}</span>}
               {r.impression && <span className="muted small">{r.impression}</span>}
               {r.dimensions && r.dimensions.length > 0 && (

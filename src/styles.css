@@ -264,3 +264,62 @@ textarea { resize: vertical; }
 .taste-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--bg); }
 .taste-row:last-child { border-bottom: none; }
 .taste-name { font-weight: 600; font-size: 14px; }
+
+/* 更新公告弹窗 */
+.overlay { position: fixed; inset: 0; background: rgba(35, 33, 30, 0.45); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.whatnew { background: var(--surface); border-radius: 18px; max-width: 460px; width: 100%; max-height: 86vh; overflow: auto; box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18); display: flex; flex-direction: column; }
+.whatnew-head { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 20px 14px; border-bottom: 1px solid var(--border); }
+.whatnew-kicker { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 1px; }
+.whatnew-title { font-size: 19px; font-weight: 700; margin-top: 4px; }
+.whatnew-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.whatnew-close { background: none; border: none; font-size: 24px; color: var(--muted); line-height: 1; padding: 2px 6px; }
+.whatnew-close:hover { color: var(--ink); }
+.whatnew-body { padding: 16px 20px 4px; }
+.whatnew-sub { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+.whatnew-list { margin: 0; padding-left: 18px; }
+.whatnew-list li { margin: 6px 0; font-size: 14px; }
+.whatnew-body .ghost-btn { width: 100%; margin-top: 12px; }
+.whatnew-history { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 4px; }
+.whatnew-ver { padding: 10px 0; border-bottom: 1px solid var(--bg); }
+.whatnew-ver:last-child { border-bottom: none; }
+.whatnew-ver-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.whatnew-ver-tag { background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.whatnew-ver-title { font-weight: 600; font-size: 14px; }
+.whatnew-foot { padding: 14px 20px 20px; border-top: 1px solid var(--border); }
+.whatnew-welcome { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.whatnew-foot .primary-btn { width: 100%; }
+
+/* 头像 */
+.avatar { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 50%; object-fit: cover; overflow: hidden; background: var(--accent-soft); color: var(--accent); }
+.avatar-emoji { background: var(--bg); }
+.avatar-initial { font-weight: 700; }
+
+/* 顶栏用户入口 */
+.user-chip { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); font-size: 14px; font-weight: 600; }
+.user-chip:hover { text-decoration: none; color: var(--accent); }
+
+/* 点评作者头像链接 */
+.review-author-link { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+.review-author-link:hover { color: var(--accent); text-decoration: none; }
+.feed-by-user { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 12px; }
+.feed-by-user:hover { color: var(--accent); text-decoration: none; }
+
+/* 个人主页 */
+.profile-head { display: flex; gap: 16px; align-items: center; }
+.profile-info { flex: 1; min-width: 0; }
+.profile-name { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.profile-bio { margin-top: 6px; font-size: 14px; }
+.profile-head .ghost-btn { flex-shrink: 0; }
+.badge-admin { background: var(--accent-soft); color: var(--accent); }
+.pref-row { margin: 10px 0; }
+.pref-label { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+.pref-row .chips { margin-top: 4px; }
+
+/* 头像选择器 */
+.emoji-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.emoji-opt { width: 38px; height: 38px; font-size: 20px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); display: inline-flex; align-items: center; justify-content: center; }
+.emoji-opt:hover { border-color: var(--accent); }
+.emoji-opt.active { border-color: var(--accent); background: var(--accent-soft); }
+
+.profile-actions { display: flex; gap: 10px; margin-top: 16px; }
+.profile-actions .primary-btn { flex: 1; }

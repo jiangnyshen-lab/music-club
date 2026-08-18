@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api.js'
-import { Cover, ListenBadge, ScorePill, formatDate } from '../components/ui.jsx'
+import { Cover, ListenBadge, ScorePill, formatDate, Avatar } from '../components/ui.jsx'
 import ReviewActions from '../components/ReviewActions.jsx'
 import FeaturedBanner from '../components/FeaturedBanner.jsx'
 
@@ -33,7 +33,9 @@ export default function Feed() {
             <div className="feed-meta">
               <div className="feed-title"><Link to={'/albums/' + it.album_id} className="album-link">{it.title}</Link></div>
               <div className="muted">{it.artist}{it.year ? ' · ' + it.year : ''}</div>
-              <div className="feed-by muted">{it.display_name} 听过 · {formatDate(it.updated_at)}</div>
+              <div className="feed-by muted">
+                <Link to={'/users/' + it.user_id} className="feed-by-user"><Avatar user={{ display_name: it.display_name, avatar: it.avatar }} size={18} /> {it.display_name}</Link> 听过 · {formatDate(it.updated_at)}
+              </div>
             </div>
             {it.score != null && <div className="feed-score"><ScorePill score={it.score} /></div>}
           </div>

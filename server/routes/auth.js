@@ -9,8 +9,13 @@ function makeSalt() {
   return crypto.randomBytes(16).toString('hex')
 }
 
-function publicUser(u) {
-  return { id: u.id, username: u.username, display_name: u.display_name, is_admin: u.is_admin }
+export function publicUser(u) {
+  return {
+    id: u.id, username: u.username, display_name: u.display_name, is_admin: u.is_admin,
+    avatar: u.avatar || '', bio: u.bio || '',
+    favorite_artists: u.favorite_artists || '', favorite_albums: u.favorite_albums || '',
+    favorite_genres: u.favorite_genres || '', created_at: u.created_at || null
+  }
 }
 
 // 注册（需要邀请码）

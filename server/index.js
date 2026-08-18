@@ -11,6 +11,7 @@ import partyRoutes from './routes/parties.js'
 import featuredRoutes from './routes/featured.js'
 import statsRoutes from './routes/stats.js'
 import trackReviewRoutes from './routes/trackReviews.js'
+import userRoutes from './routes/users.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -26,6 +27,7 @@ app.use('/api', partyRoutes)
 app.use('/api', featuredRoutes)
 app.use('/api', statsRoutes)
 app.use('/api', trackReviewRoutes)
+app.use('/api', userRoutes)
 
 app.get('/api/health', (req, res) => res.json({ ok: true }))
 

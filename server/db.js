@@ -21,7 +21,12 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT NOT NULL,
   salt TEXT NOT NULL,
   is_admin INTEGER NOT NULL DEFAULT 0,
-  created_at TEXT NOT NULL
+  created_at TEXT NOT NULL,
+  avatar TEXT,
+  bio TEXT,
+  favorite_artists TEXT,
+  favorite_albums TEXT,
+  favorite_genres TEXT
 );
 
 CREATE TABLE IF NOT EXISTS invite_codes (
@@ -142,6 +147,18 @@ CREATE TABLE IF NOT EXISTS track_dimension_scores (
   note TEXT
 );
 `)
+
+// 老库补列：给已存在的 users 表加个人主页字段（列已存在则忽略报错）
+const userColumns = [
+  'ALTER TABLE users ADD COLUMN avatar TEXT',
+  'ALTER TABLE users ADD COLUMN bio TEXT',
+  'ALTER TABLE users ADD COLUMN favorite_artists TEXT',
+  'ALTER TABLE users ADD COLUMN favorite_albums TEXT',
+  'ALTER TABLE users ADD COLUMN favorite_genres TEXT'
+]
+for (const sql of userColumns) {
+  try { db.exec(sql) } catch { /* 列已存在，跳过 */ }
+}
 
 // 当前时间（ISO，前端直接能格式化）
 export function now() {

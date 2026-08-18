@@ -10,6 +10,19 @@ export function Cover({ url, title, size = 64, radius = 10 }) {
   return <img className="cover" src={url} style={style} alt={title || ''} loading="lazy" onError={() => setErr(true)} />
 }
 
+// 头像：图片链接 / emoji / 昵称首字，三档降级
+export function Avatar({ user, size = 32 }) {
+  const [err, setErr] = useState(false)
+  const name = ((user?.display_name || user?.username) || '?').trim()
+  const avatar = user?.avatar || ''
+  const style = { width: size, height: size, fontSize: Math.round(size * 0.42) }
+  if (/^https?:\/\//i.test(avatar) && !err) {
+    return <img className="avatar" src={avatar} alt={name} style={style} onError={() => setErr(true)} />
+  }
+  if (avatar) return <span className="avatar avatar-emoji" style={style}>{avatar}</span>
+  return <span className="avatar avatar-initial" style={style}>{name[0] || '♪'}</span>
+}
+
 export function ScoreSlider({ value, onChange }) {
   return (
     <div className="score-slider">

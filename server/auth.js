@@ -8,7 +8,8 @@ export function createToken() {
 export function getUserFromToken(token) {
   if (!token) return null
   return db.prepare(`
-    SELECT u.id, u.username, u.display_name, u.is_admin
+    SELECT u.id, u.username, u.display_name, u.is_admin,
+      u.avatar, u.bio, u.favorite_artists, u.favorite_albums, u.favorite_genres, u.created_at
     FROM sessions s JOIN users u ON u.id = s.user_id
     WHERE s.token = ?
   `).get(token) || null

@@ -67,7 +67,7 @@ router.get('/albums/:id', requireAuth, (req, res) => {
   try { tracks = JSON.parse(album.tracks_json || '[]') } catch { /* ignore */ }
 
   const reviews = db.prepare(`
-    SELECT r.*, u.display_name, u.username,
+    SELECT r.*, u.display_name, u.username, u.avatar,
       (SELECT COUNT(*) FROM review_likes rl WHERE rl.review_id = r.id) AS like_count,
       (SELECT COUNT(*) FROM review_comments rc WHERE rc.review_id = r.id) AS comment_count,
       EXISTS(SELECT 1 FROM review_likes rl WHERE rl.review_id = r.id AND rl.user_id = ?) AS liked_by_me
@@ -92,7 +92,7 @@ router.get('/albums/:id', requireAuth, (req, res) => {
 
   // 单曲点评（带维度分 + 点评人昵称）
   const trackReviews = db.prepare(`
-    SELECT tr.*, u.display_name
+    SELECT tr.*, u.display_name, u.avatar
     FROM track_reviews tr JOIN users u ON u.id = tr.user_id
     WHERE tr.album_id = ? ORDER BY tr.updated_at DESC
   `).all(album.id)
